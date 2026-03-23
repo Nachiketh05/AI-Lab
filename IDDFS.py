@@ -1,45 +1,54 @@
-def dls(graph, node, goal, depth, visited):
-    if node == goal:
-        return True
-    
-    if depth <= 0:
-        return False
+# Tree represented as adjacency list
+tree = {
+    1: [2, 3],
+    2: [4, 5],
+    3: [6, 7],
+    4: [],
+    5: [],
+    6: [],
+    7: []
+}
 
-    visited.add(node)
+# Depth-Limited Search
+def dls(node, target, depth, path):
+    if depth < 0:
+        return None
 
-    for neighbor in graph.get(node, []):
-        if neighbor not in visited:
-            if dls(graph, neighbor, goal, depth - 1, visited):
-                return True
+    path.append(node)
 
-    return False
+    if node == target:
+        return path
 
+    if depth == 0:
+        path.pop()
+        return None
 
-def iddfs(graph, start, goal, max_depth):
+    for child in tree[node]:
+        result = dls(child, target, depth - 1, path)
+        if result:
+            return result
+
+    path.pop()
+    return None
+
+# IDDFS
+def iddfs(start, target, max_depth):
     for depth in range(max_depth + 1):
-        visited = set()
-        print(f"Searching at depth {depth}...")
-
-        if dls(graph, start, goal, depth, visited):
-            print(f"\n Goal node {goal} found at depth {depth}")
-            return
-
-    print("\n Goal node not found")
+        path = []
+        result = dls(start, target, depth, path)
+        if result:
+            return result
+    return None
 
 
+# Example
+start_node = 1
+target_node = 7
+max_depth = 3
 
-n = int(input("Enter number of nodes: "))
+result = iddfs(start_node, target_node, max_depth)
 
-graph = {}
-
-print("Enter adjacency list (space-separated neighbors):")
-for i in range(n):
-    neighbors = list(map(int, input(f"Node {i}: ").split()))
-    graph[i] = neighbors
-
-start = int(input("Enter start node: "))
-goal = int(input("Enter goal node: "))
-max_depth = int(input("Enter maximum depth limit: "))
-
-
-iddfs(graph, start, goal, max_depth)
+if result:
+    print("Path found:", " -> ".join(map(str, result)))
+else:
+    print("Target not found")
